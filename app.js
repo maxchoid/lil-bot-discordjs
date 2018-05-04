@@ -6,7 +6,7 @@ const ms = require("ms");
 
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
-  client.user.setGame('Made by Kem. (Alpha)', 'https://twitch.tv/jamiepinelive');
+  client.user.setGame('Made by Kem. (Alpha)');
   client.user.setStatus('dnd')
 });
 
@@ -46,7 +46,8 @@ client.on("message", async message => {
   message.channel.send({embed});
 };
 
-  if(command === "ping") {
+
+if(command === "ping") {
     const m = await message.channel.send("Ping?");
     m.edit(`Bad! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
   }
