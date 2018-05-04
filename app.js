@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const config = require("./config.json");
 const ms = require("ms");
+const moment = require("moment");
 
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
@@ -34,9 +35,81 @@ if(command === "server") {
   message.channel.send(embed);
 };
 
+if(command === 'userinfo') {
+  let user;
+    if (message.mentions.users.first()) {
+      user = message.mentions.users.first();
+    } else {
+        user = message.author;
+    }
+    const member = message.guild.member(user);
+	
+    const embed = new Discord.RichEmbed()
+		.setColor('RANDOM')
+		.setThumbnail(user.avatarURL)
+		.setTitle(`${user.username}#${user.discriminator}`)
+		.addField("ID:", `${user.id}`, true)
+		.addField("Nickname:", `${member.nickname !== null ? `${member.nickname}` : 'None'}`, true)
+		.addField("Created At:", `${moment.utc(user.createdAt).format('dddd, MMMM Do YYYY, HH:mm:ss')}`, true)
+		.addField("Joined Server:", `${moment.utc(member.joinedAt).format('dddd, MMMM Do YYYY, HH:mm:ss')}`, true)
+		.addField("Bot:", `${user.bot}`, true)
+		.addField("Status:", `${user.presence.status}`, true)
+		.setFooter(`Replying to ${message.author.username}#${message.author.discriminator}`)
+     message.channel.send({embed});
+    }
+
+if(command === "mute") {
+  if (!message.member.hasPermission("MANAGE_MESSAGES")) return message.reply("Sorry, you do not have the perms to do that! :x:");
+  let tomute = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+  if (!tomute) return message.reply("Cannot find them!");
+  if (tomute.hasPermission("MANAGE_MESSAGES")) return message.reply("Can\'t mute them!");
+  let muterole = message.guild.roles.find(`name`, "Muted");
+
+  if (!muterole) {
+      try {
+          muterole = await message.guild.createRole({
+              name: "Muted",
+              color: "#000000",
+              permissions: []
+          })
+          message.guild.channels.forEach(async (channel, id) => {
+              await channel.overwritePermissions(muterole, {
+                  SEND_MESSAGES: false,
+                  ADD_REACTIONS: false
+              });
+          });
+      } catch (e) {
+          console.log(e.stack);
+      }
+  }
+
+  let mutetime = args[1];
+  if (!mutetime) return message.reply("You didn't specify a time!");
+
+  await (tomute.addRole(muterole.id));
+  message.reply(`<@${tomute.id}> got muted for ${ms(ms(mutetime))}`);
+
+  setTimeout(function() {
+      tomute.removeRole(muterole.id);
+      message.channel.send(`<@${tomute.id}> has been unmuted!`);
+  }, ms(mutetime));
+
+}
+
+exports.conf = {
+  aliases: [],
+  permLevel: 2
+};
+
+module.exports.help = {
+  name: "mute",
+  description: 'Denies the user from speaking for the time provided.',
+  usage: 'mute [time: hours, minitues, or days.]'
+}
+
 if(command === "ping") {
-    const m = await message.channel.send("Ping?");
-    m.edit(`Bad! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
+    const m = await message.channel.send("Loading");
+    m.edit(`Your latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
   }
 
   if(command === "say") { 
