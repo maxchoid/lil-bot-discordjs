@@ -5,7 +5,7 @@ const config = require("./config.json");
 
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
-  client.user.setGame(`jHelp | Developed by Kem!`);
+  client.user.setGame(`on ${client.guilds.size} servers`);
 });
 
 client.on("guildCreate", guild => {
@@ -23,16 +23,9 @@ client.on("message", async message => {
   if(message.author.bot) return;
   if(message.content.indexOf(config.prefix) !== 0) return;
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-  const command = args.shift().toLowerCase();
+  const command = args.shift().toLowerCase()
 
-
-  if(command === "help") {
-    return message.reply("https://twitter.com/JamieBotjs/status/991810840268496896");
-    }
-
-  
-
-  
+   
   if(command === "ping") {
     const m = await message.channel.send("Ping?");
     m.edit(`Bad! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
