@@ -2,22 +2,21 @@ const Discord = require("discord.js");
 const music = require('discord.js-music');
 const client = new Discord.Client();
 const config = require("./config.json");
+const ms = require("ms");
 
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
-  client.user.setGame(`on ${client.guilds.size} servers`);
+  client.user.setGame('Made by Kem. (Alpha)', 'https://twitch.tv/jamiepinelive');
+  client.user.setStatus('dnd')
 });
 
 client.on("guildCreate", guild => {
   console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
-  client.user.setGame(`on ${client.guilds.size} servers`);
 });
 
 client.on("guildDelete", guild => {
   console.log(`I have been removed from: ${guild.name} (id: ${guild.id})`);
-  client.user.setGame(`on ${client.guilds.size} servers`);
 });
-
 
 client.on("message", async message => {
   if(message.author.bot) return;
@@ -25,18 +24,38 @@ client.on("message", async message => {
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase()
 
-   
+  if(command === "twitter") {
+    const embed = new Discord.RichEmbed()
+  .setTitle("The dev's twitter.")
+  .setColor(0x00AE86)
+  .setDescription("https://twitter.com/ohnokem")
+  .setTimestamp()
+  message.channel.send({embed});
+  }
+
+  if(command === "server") {
+    const embed = new Discord.RichEmbed()
+  .setTitle("Statistics")
+  .setColor(0x00AE86)
+  .addField('Name', `**${guild.name}**`)
+  .addField('Total', `**${message.guild.memberCount}**`, true)
+  .addField('Humans', `**${message.guild.members.filter(member => !member.user.bot).size}**`, true)
+  .addField('Bots', `**${message.guild.members.filter(member => member.user.bot).size}**`, true)
+  .addTimestamp()
+
+  message.channel.send({embed});
+};
+
   if(command === "ping") {
     const m = await message.channel.send("Ping?");
     m.edit(`Bad! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
   }
-  
+
   if(command === "say") { 
     const sayMessage = args.join(" ");
     message.delete().catch(O_o=>{});  
     message.channel.send(sayMessage);
   }
-  
   
   
   if(command === "kick") {
