@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const music = require('discord.js-music');
 const client = new Discord.Client();
 const config = require("./config.json");
 const ms = require("ms");
@@ -7,7 +6,7 @@ const ms = require("ms");
 client.on("ready", () => {
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
   client.user.setGame('Made by Kem. (Alpha)');
-  client.user.setStatus('dnd')
+  client.user.setStatus('Online')
 });
 
 client.on("guildCreate", guild => {
@@ -24,28 +23,16 @@ client.on("message", async message => {
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase()
 
-  if(command === "twitter") {
-    const embed = new Discord.RichEmbed()
-  .setTitle("The dev's twitter.")
-  .setColor(0x00AE86)
-  .setDescription("https://twitter.com/ohnokem")
-  .setTimestamp()
-  message.channel.send({embed});
-  }
-
-  if(command === "server") {
-    const embed = new Discord.RichEmbed()
-  .setTitle("Statistics")
-  .setColor(0x00AE86)
-  .addField('Name', `**${guild.name}**`)
-  .addField('Total', `**${message.guild.memberCount}**`, true)
-  .addField('Humans', `**${message.guild.members.filter(member => !member.user.bot).size}**`, true)
-  .addField('Bots', `**${message.guild.members.filter(member => member.user.bot).size}**`, true)
-  .addTimestamp()
-
-  message.channel.send({embed});
+if(command === "server") {
+  const embed = new Discord.RichEmbed()
+        .setTitle('Server Statistics')
+        .setColor('RANDOM')
+        .addField('Members', `**${message.guild.memberCount}**`, true)
+        .addField('Humans', `**${message.guild.members.filter(member => !member.user.bot).size}**`, true)
+        .addField('Bots', `**${message.guild.members.filter(member => member.user.bot).size}**`, true)
+        .setTimestamp()
+  message.channel.send(embed);
 };
-
 
 if(command === "ping") {
     const m = await message.channel.send("Ping?");
@@ -62,7 +49,7 @@ if(command === "ping") {
   if(command === "kick") {
 
     if(!message.member.roles.some(r=>["lil", "Moderator"].includes(r.name)) )
-      return message.reply("Sorry, you don't ave permissions to use this!");
+      return message.reply("No :x: You don't have the perms!");
     
 
     let member = message.mentions.members.first();
@@ -71,12 +58,10 @@ if(command === "ping") {
     if(!member.kickable) 
       return message.reply("I cannot kick this user! Do they have a higher role? Do I have kick permissions?");
     
-    // very tired
     let reason = args.slice(1).join(' ');
     if(!reason)
       return message.reply("Tell me why!");
     
-    // good quickscope 
     await member.kick(reason)
       .catch(error => message.reply(`Sorry ${message.author} I couldn't kick because of : ${error}`));
     message.reply(`${member.user.tag} is gona because of ${message.author.tag} because: ${reason}`);
