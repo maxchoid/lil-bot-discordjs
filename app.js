@@ -35,7 +35,7 @@ if(command === "server") {
   message.channel.send(embed);
 };
 
-if(command === 'userinfo') {
+if(command === 'info') {
   let user;
     if (message.mentions.users.first()) {
       user = message.mentions.users.first();
