@@ -1,0 +1,10 @@
+.log
+./node_modules
+node_modules
+.zip
+.tar.gz
+.rar
+config.json
+./config.json
+package.json
+*.json
